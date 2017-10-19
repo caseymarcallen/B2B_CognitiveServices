@@ -271,12 +271,15 @@ namespace B2B_CognitiveServices_Cafe
 
             if (order.Order.Any())
             {
-                orderConfirmation = "No worries. ";                
+                var intros = new string[] { "No worries", "Sure", "Good choice" };
+                var outros = new string[] { "coming right up", "on the way", ". That won't be long" };
+
+                orderConfirmation = $"{intros[new Random().Next(0, intros.Length-1)]}. ";
                 foreach (var orderItem in order.Order)
                 {
                     orderConfirmation += $"{orderItem.Number} {orderItem.CoffeeType}, ";
                 }
-                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + " coming right up";
+                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + $" {outros[new Random().Next(0, outros.Length-1)]}. ";
             }
             else
             {

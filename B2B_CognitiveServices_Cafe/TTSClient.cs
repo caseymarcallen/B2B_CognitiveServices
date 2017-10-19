@@ -364,11 +364,7 @@ namespace B2B_CognitiveServices_Cafe
         /// </summary>
         private void AudioAvailable(GenericEventArgs<Stream> e)
         {
-            EventHandler<GenericEventArgs<Stream>> handler = this.OnAudioAvailable;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            this.OnAudioAvailable?.Invoke(this, e);
         }
 
         /// <summary>
@@ -377,11 +373,7 @@ namespace B2B_CognitiveServices_Cafe
         /// <param name="e">The exception</param>
         private void Error(GenericEventArgs<Exception> e)
         {
-            EventHandler<GenericEventArgs<Exception>> handler = this.OnError;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            this.OnError?.Invoke(this, e);
         }
 
         /// <summary>
@@ -396,7 +388,6 @@ namespace B2B_CognitiveServices_Cafe
             {
                 this.Locale = "en-us";
                 this.VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)";
-                // Default to Riff16Khz16BitMonoPcm output format.
                 this.OutputFormat = AudioOutputFormat.Riff16Khz16BitMonoPcm;
             }
 
