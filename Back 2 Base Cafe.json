@@ -1,0 +1,184 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "0.1",
+  "name": "Back 2 Base Cafe",
+  "desc": "Back 2 Base - Barista LUIS App",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "None"
+    },
+    {
+      "name": "Order Coffee"
+    }
+  ],
+  "entities": [],
+  "composites": [
+    {
+      "name": "Coffee Order",
+      "children": [
+        "number",
+        "coffee type"
+      ]
+    }
+  ],
+  "closedLists": [
+    {
+      "name": "coffee type",
+      "subLists": [
+        {
+          "canonicalForm": "Espresso",
+          "list": [
+            "espressos"
+          ]
+        },
+        {
+          "canonicalForm": "Ristretto",
+          "list": [
+            "ristrettos"
+          ]
+        },
+        {
+          "canonicalForm": "Flat White",
+          "list": [
+            "flat whites"
+          ]
+        },
+        {
+          "canonicalForm": "Cappuccino",
+          "list": [
+            "cappuccinos"
+          ]
+        },
+        {
+          "canonicalForm": "Latte",
+          "list": [
+            "lattes"
+          ]
+        },
+        {
+          "canonicalForm": "Short Macchiato",
+          "list": [
+            "short mac",
+            "short macchatios",
+            "short macs"
+          ]
+        },
+        {
+          "canonicalForm": "Long Macchiato",
+          "list": [
+            "long mac",
+            "long macchiatos",
+            "long macs"
+          ]
+        },
+        {
+          "canonicalForm": "Affogato",
+          "list": [
+            "affogatos"
+          ]
+        },
+        {
+          "canonicalForm": "Mocha",
+          "list": [
+            "mochas"
+          ]
+        },
+        {
+          "canonicalForm": "Long Black",
+          "list": [
+            "americano",
+            "long blacks",
+            "americanos"
+          ]
+        },
+        {
+          "canonicalForm": "Double Espresso",
+          "list": [
+            "double espressos"
+          ]
+        },
+        {
+          "canonicalForm": "Iced Coffee",
+          "list": [
+            "iced coffees"
+          ]
+        },
+        {
+          "canonicalForm": "Frappe",
+          "list": [
+            "frappes"
+          ]
+        }
+      ]
+    }
+  ],
+  "bing_entities": [
+    "number"
+  ],
+  "actions": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "1 flat white please",
+      "intent": "Order Coffee",
+      "entities": [
+        {
+          "entity": "Coffee Order",
+          "startPos": 0,
+          "endPos": 11
+        }
+      ]
+    },
+    {
+      "text": "i'll have 2 mochas and 1 cappuccino",
+      "intent": "Order Coffee",
+      "entities": [
+        {
+          "entity": "Coffee Order",
+          "startPos": 10,
+          "endPos": 17
+        },
+        {
+          "entity": "Coffee Order",
+          "startPos": 23,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "give me one flat white",
+      "intent": "Order Coffee",
+      "entities": [
+        {
+          "entity": "Coffee Order",
+          "startPos": 8,
+          "endPos": 21
+        }
+      ]
+    },
+    {
+      "text": "i want 3 long macs",
+      "intent": "Order Coffee",
+      "entities": [
+        {
+          "entity": "Coffee Order",
+          "startPos": 7,
+          "endPos": 17
+        }
+      ]
+    },
+    {
+      "text": "can i please have a mocha",
+      "intent": "Order Coffee",
+      "entities": [
+        {
+          "entity": "Coffee Order",
+          "startPos": 18,
+          "endPos": 24
+        }
+      ]
+    }
+  ]
+}
