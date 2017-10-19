@@ -5,9 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Media;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -63,6 +66,8 @@ namespace B2B_CognitiveServices_Cafe
                     }
                     ResultTextBox.Text = coffeeOrderResult.JsonResponse;
                 });
+
+                ConfirmOrder(coffeeOrderResult);
             }
         }
 
@@ -231,6 +236,101 @@ namespace B2B_CognitiveServices_Cafe
                     InputText += " Placing Order...";
                 }
             });
+        }
+
+
+
+
+        //--------------------------------------------------------------------
+        // 2 - Text to Speech Confirmation
+
+
+        // --------------------------------------
+        // Edit these values
+        // --------------------------------------
+
+
+        private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
+        {
+            Console.WriteLine(args.EventData);
+
+            // For SoundPlayer to be able to play the wav file, it has to be encoded in PCM.
+            // Use output audio format AudioOutputFormat.Riff16Khz16BitMonoPcm to do that.
+            SoundPlayer player = new SoundPlayer(args.EventData);
+            player.PlaySync();
+            args.EventData.Dispose();
+        }
+        private static void ErrorHandler(object sender, GenericEventArgs<Exception> e)
+        {
+            Console.WriteLine("Unable to complete the TTS request: [{0}]", e.ToString());
+        }
+
+        private string FormatOrderText(CoffeeOrderResult order)
+        {
+            string orderConfirmation = "";
+
+            if (order.Order.Any())
+            {
+                orderConfirmation = "No worries. ";                
+                foreach (var orderItem in order.Order)
+                {
+                    orderConfirmation += $"{orderItem.Number} {orderItem.CoffeeType}, ";
+                }
+                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + " coming right up";
+            }
+            else
+            {
+                orderConfirmation = "I'm sorry, I didn't quite catch that.";
+            }
+
+            return orderConfirmation;
+        }
+
+        private void ConfirmOrder(CoffeeOrderResult order)
+        {
+            Console.WriteLine("Starting Authtentication");
+            string accessToken;
+
+            // Note: The way to get api key:
+            // Free: https://www.microsoft.com/cognitive-services/en-us/subscriptions?productId=/products/Bing.Speech.Preview
+            // Paid: https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/Bing.Speech/pricingtier/S0
+            Authentication auth = new Authentication(BingSpeechSubscriptionKey);
+
+            try
+            {
+                accessToken = auth.GetAccessToken();
+                Console.WriteLine("Token: {0}\n", accessToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed authentication.");
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
+                return;
+            }
+
+            Console.WriteLine("Starting TTSSample request code execution.");
+            
+            var orderConfirmationText = FormatOrderText(order);
+
+            string requestUri = "https://speech.platform.bing.com/synthesize";
+
+            var cortana = new Synthesize();
+
+            cortana.OnAudioAvailable += PlayAudio;
+            cortana.OnError += ErrorHandler;
+
+            // Reuse Synthesize object to minimize latency
+            cortana.Speak(CancellationToken.None, new Synthesize.InputOptions()
+            {
+                RequestUri = new Uri(requestUri),
+                Text = orderConfirmationText,
+                VoiceType = Gender.Female,
+                Locale = "en-US",
+                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
+                OutputFormat = AudioOutputFormat.Riff16Khz16BitMonoPcm,
+                AuthorizationToken = "Bearer " + accessToken,
+            }).Wait();
         }
 
     }
