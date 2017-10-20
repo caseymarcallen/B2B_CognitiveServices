@@ -176,10 +176,14 @@ namespace B2B_CognitiveServices_Cafe
             micClient =
                 SpeechRecognitionServiceFactory.CreateMicrophoneClientWithIntent(
                 "en-AU",
-                BingSpeechSubscriptionKey,
+                //BingSpeechSubscriptionKey,
+                "1fe791132e4446fbb34a81416c94ba3d",
+                "83cb3abfeac041958f8216c9648fc8da",
                 LuisAppId,
-                LuisSubscriptionKey);
-            
+                LuisSubscriptionKey,
+                "https://54eddef2177945bfa631ea5b31a4a1a4.api.cris.ai/ws/cris/speech/recognize");
+            micClient.AuthenticationUri = "https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken";
+
             micClient.OnIntent += OnIntentHandler;
 
             // Event handlers for speech recognition results
