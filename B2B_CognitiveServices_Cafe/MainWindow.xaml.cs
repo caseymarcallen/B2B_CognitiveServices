@@ -248,6 +248,8 @@ namespace B2B_CognitiveServices_Cafe
         //--------------------------------------------------------------------
         // 2 - Text to Speech Confirmation
 
+        private Random _rand = new Random();
+        private Cortana _cortana = new Cortana();
 
         // --------------------------------------
         // Edit these values
@@ -256,18 +258,16 @@ namespace B2B_CognitiveServices_Cafe
 
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
-            Console.WriteLine(args.EventData);
-
-            // For SoundPlayer to be able to play the wav file, it has to be encoded in PCM.
-            // Use output audio format AudioOutputFormat.Riff16Khz16BitMonoPcm to do that.
             SoundPlayer player = new SoundPlayer(args.EventData);
             player.PlaySync();
             args.EventData.Dispose();
         }
+
         private static void ErrorHandler(object sender, GenericEventArgs<Exception> e)
         {
             Console.WriteLine("Unable to complete the TTS request: [{0}]", e.ToString());
         }
+
 
         private string FormatOrderText(CoffeeOrderResult order)
         {
@@ -278,12 +278,12 @@ namespace B2B_CognitiveServices_Cafe
                 var intros = new string[] { "No worries", "Sure", "Good choice" };
                 var outros = new string[] { "coming right up", "on the way", ". That won't be long" };
 
-                orderConfirmation = $"{intros[new Random().Next(0, intros.Length-1)]}. ";
+                orderConfirmation = $"{intros[_rand.Next(0, intros.Length)]}. ";
                 foreach (var orderItem in order.Order)
                 {
                     orderConfirmation += $"{orderItem.Number} {orderItem.CoffeeType}, ";
                 }
-                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + $" {outros[new Random().Next(0, outros.Length-1)]}. ";
+                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + $" {outros[_rand.Next(0, outros.Length)]}. ";
             }
             else
             {
@@ -297,10 +297,7 @@ namespace B2B_CognitiveServices_Cafe
         {
             Console.WriteLine("Starting Authtentication");
             string accessToken;
-
-            // Note: The way to get api key:
-            // Free: https://www.microsoft.com/cognitive-services/en-us/subscriptions?productId=/products/Bing.Speech.Preview
-            // Paid: https://portal.azure.com/#create/Microsoft.CognitiveServices/apitype/Bing.Speech/pricingtier/S0
+            
             Authentication auth = new Authentication(BingSpeechSubscriptionKey);
 
             try
@@ -321,20 +318,18 @@ namespace B2B_CognitiveServices_Cafe
             var orderConfirmationText = FormatOrderText(order);
 
             string requestUri = "https://speech.platform.bing.com/synthesize";
+            
 
-            var cortana = new Synthesize();
-
-            cortana.OnAudioAvailable += PlayAudio;
-            cortana.OnError += ErrorHandler;
-
-            // Reuse Synthesize object to minimize latency
-            cortana.Speak(CancellationToken.None, new Synthesize.InputOptions()
+            _cortana.OnAudioAvailable += PlayAudio;
+            _cortana.OnError += ErrorHandler;
+            
+            _cortana.Speak(CancellationToken.None, new Cortana.InputOptions()
             {
                 RequestUri = new Uri(requestUri),
                 Text = orderConfirmationText,
                 VoiceType = Gender.Female,
                 Locale = "en-US",
-                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
+                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)", // en-US knows how to say cappuccino properly (AU does not)
                 OutputFormat = AudioOutputFormat.Riff16Khz16BitMonoPcm,
                 AuthorizationToken = "Bearer " + accessToken,
             }).Wait();
