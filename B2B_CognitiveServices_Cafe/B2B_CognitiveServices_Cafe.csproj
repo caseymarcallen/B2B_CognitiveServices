@@ -60,7 +60,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="TTSClient.cs" />
+    <Compile Include="BingSpeech\AudioOutputFormat.cs" />
+    <Compile Include="BingSpeech\Authentication.cs" />
+    <Compile Include="BingSpeech\Cortana.cs" />
+    <Compile Include="BingSpeech\Gender.cs" />
+    <Compile Include="BingSpeech\GenericEventArgs.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
