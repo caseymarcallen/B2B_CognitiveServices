@@ -1,5 +1,5 @@
 ﻿# B2B_CognitiveServices
-Back 2 Base Cognitive Services Workshop
+This repository is the basis for a workshop on Microsoft Cognitive Services run at the Readify Back 2 Base event.
 
 ## Overview
 
@@ -17,13 +17,17 @@ Under the hood LUIS can also automatically use spell checking to cater for spell
 
 __Speech: [Bing Speech API]() - Speech Recognition__
 
-If we have enough time we'll add on speech recognition to the app so we can talk to our barista to order a coffee.
+Add on speech recognition to the app so we can talk to our barista to order a coffee.
+
+__Speech: [Bing Custom Speech]() - Better Speech Recognition__
+
+Customise the speech recognition for our cafe domain to get better results.
 
 __Speech: [Bing Speech API]() - Text to Speech__
 
 Lets get our barista to confirm the order by repeating the exact order back to us.
 
-__Language: []
+
 
 # Steps
 
@@ -43,7 +47,7 @@ __Language: []
 
 3. Configure App to use LUIS API.
 
-    3.1 Open the solution in Visual Studio and edit `CognitiveServicesClient.cs` to set your AppID and SubscriptionKey as shown in the LUIS Website.
+    3.1 Open the solution in Visual Studio and edit `MainPage.xaml.cs` to set your AppID and SubscriptionKey as shown in the LUIS Website.
 
     3.2 Add the following API calling code to the `MakeLuisRequest()` method:
     ```
