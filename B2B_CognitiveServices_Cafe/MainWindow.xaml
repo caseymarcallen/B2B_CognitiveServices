@@ -34,7 +34,7 @@
             <TextBox x:Name="InputTextBox" Grid.Row="3" MinHeight="100" Background="#6000" Text="{Binding InputText, Mode=TwoWay}"/>
             <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Center">
             <Button x:Name="PlaceOrderButton" Content="Place Order" Margin="12" Click="PlaceOrderButton_Click"/>
-                <Button x:Name="ListenToOrderButton" Content="Say Order" Margin="12" Click="ListenToOrderButton_Click"/>
+            <!--<Button x:Name="ListenToOrderButton" Content="Say Order" Margin="12" Click="ListenToOrderButton_Click"/>-->
             </StackPanel>
             <TextBlock Text="Your Order:" Grid.Row="5" Margin="0, 8" />
             <Grid Grid.Row="6">
