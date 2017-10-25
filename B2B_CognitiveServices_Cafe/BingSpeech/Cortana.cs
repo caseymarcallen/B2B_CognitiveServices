@@ -44,7 +44,7 @@ namespace B2B_CognitiveServices_Cafe
 {
 
     /// <summary>
-    /// Sample synthesize request
+    /// Helper to call the Bing Text to Speech API
     /// </summary>
     public class Cortana
     {

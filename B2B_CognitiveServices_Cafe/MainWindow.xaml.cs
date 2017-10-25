@@ -1,19 +1,10 @@
 ﻿using B2B_CognitiveServices_Cafe.Model;
-using Microsoft.CognitiveServices.SpeechRecognition;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Media;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 
 namespace B2B_CognitiveServices_Cafe
 {
@@ -22,7 +13,6 @@ namespace B2B_CognitiveServices_Cafe
     /// </summary>
     public partial class MainWindow : Window
     {
-
         public ObservableCollection<CoffeeOrder> Orders { get; set; }
 
         public MainWindow()
@@ -36,10 +26,10 @@ namespace B2B_CognitiveServices_Cafe
         {
             Orders.Clear();
             var coffeeOrderResult = await MakeLuisRequest(InputTextBox.Text);
-            await UpdateCoffeeOrder(coffeeOrderResult);
+            await ShowCoffeeOrder(coffeeOrderResult);
         }
-
-        private async Task UpdateCoffeeOrder(CoffeeOrderResult coffeeOrderResult)
+        
+        private async Task ShowCoffeeOrder(CoffeeOrderResult coffeeOrderResult)
         {
             if (coffeeOrderResult != null)
             {
@@ -53,8 +43,6 @@ namespace B2B_CognitiveServices_Cafe
                     }
                     ResultTextBox.Text = coffeeOrderResult.JsonResponse;
                 });
-
-                await ConfirmOrder(coffeeOrderResult);
             }
         }
 
@@ -73,8 +61,8 @@ namespace B2B_CognitiveServices_Cafe
         // --------------------------------------
         // Edit these values
         // --------------------------------------
-        private const string LuisAppId = "b2cc5cf4-4129-4daa-a6c6-97dbcac22121";
-        private const string LuisSubscriptionKey = "7dbea38a27424387b2b3563b4c80ad72";
+        private const string LuisAppId = "<Your LUIS App Id>";
+        private const string LuisSubscriptionKey = "<Your Luis Subscription Id>";
 
 
 
@@ -83,13 +71,9 @@ namespace B2B_CognitiveServices_Cafe
         {
             string apiResponse = "";
 
+            ////////////////////////////////////////////////////////////////
             // INSERT LUIS API CALL CODE HERE!
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", LuisSubscriptionKey);
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/{LuisAppId}?spellCheck=true&q={orderText}";
-            var response = await client.GetAsync(uri);
-            apiResponse = await response.Content.ReadAsStringAsync();
-
+            ////////////////////////////////////////////////////////////////
 
             var result = JsonConvert.DeserializeObject<LuisModel>(apiResponse);
 
@@ -134,14 +118,14 @@ namespace B2B_CognitiveServices_Cafe
 
 
 
-        //--------------------------------------------------------------------
+        /*--------------------------------------------------------------------
         // 2 - Speech Recognition
 
 
         // --------------------------------------
         // Edit these values
         // --------------------------------------
-        private const string BingSpeechSubscriptionKey = "4a6aaf9b71704e8192b9bff951db82c2";
+        private const string BingSpeechSubscriptionKey = "<Your Bing Speech API Key>";
 
 
         private MicrophoneRecognitionClient micClient;
@@ -151,7 +135,7 @@ namespace B2B_CognitiveServices_Cafe
         {
             if (micClient == null)
             {
-                CreateMicrophoneClientWithIntent();
+                CreateCustomMicrophoneClientWithIntent();
             }
 
             micClient.StartMicAndRecognition();
@@ -159,14 +143,10 @@ namespace B2B_CognitiveServices_Cafe
 
 
         private void CreateMicrophoneClientWithIntent()
-        {
-            micClient =
-                SpeechRecognitionServiceFactory.CreateMicrophoneClientWithIntent(
-                "en-AU",
-                BingSpeechSubscriptionKey,
-                LuisAppId,
-                LuisSubscriptionKey);
-            micClient.AuthenticationUri = "";
+        {    
+            ////////////////////////////////////////////////////////////////
+            // INSERT SPEECH TO TEXT API CALL CODE HERE!     
+            ////////////////////////////////////////////////////////////////
 
             RegisterMicrophoneEventHandlers();
         }
@@ -197,7 +177,7 @@ namespace B2B_CognitiveServices_Cafe
 
         }
 
-        private void OnIntentHandler(object sender, SpeechIntentEventArgs e)
+        private async void OnIntentHandler(object sender, SpeechIntentEventArgs e)
         {
             // Stop the microphone
             micClient.EndMicAndRecognition();
@@ -206,7 +186,7 @@ namespace B2B_CognitiveServices_Cafe
             var result = JsonConvert.DeserializeObject<LuisModel>(apiResponse);
             var order = ProcessOrder(result);
 
-            UpdateCoffeeOrder(new CoffeeOrderResult
+            await ShowCoffeeOrder(new CoffeeOrderResult
             {
                 JsonResponse = apiResponse,
                 Order = order
@@ -228,50 +208,45 @@ namespace B2B_CognitiveServices_Cafe
             });
         }
 
+        --------------------------------------------------------------------- */
 
 
-
-        //--------------------------------------------------------------------
+        /*--------------------------------------------------------------------
         // 2b - Custom Speech Recognition
         //
         // By building a custom speech model we can get much better results
 
 
         // --------------------------------------
-        // Edit these values
+        // These values point to casey's custom speech endpoint. 
+        // If you have time, you can create your own endpoint 
+        // and update them to your own values.
         // --------------------------------------
         private const string CustomSpeechApiPrimaryKey = "1fe791132e4446fbb34a81416c94ba3d";
         private const string CustomSpeechApiSecondaryKey = "83cb3abfeac041958f8216c9648fc8da";
         private const string CustomSpeechApiUrl = "https://54eddef2177945bfa631ea5b31a4a1a4.api.cris.ai/ws/cris/speech/recognize";
         private const string CustomSpeechAuthorizationUrl = "https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken";
 
-        // and swap the ListenToOrderButton_Click handler to call this method instead of the basic one.
+        // Swap the ListenToOrderButton_Click handler to call this method instead of the basic one.
 
         private void CreateCustomMicrophoneClientWithIntent()
         {
-            micClient =
-                SpeechRecognitionServiceFactory.CreateMicrophoneClientWithIntent(
-                "en-AU",
-                CustomSpeechApiPrimaryKey,
-                CustomSpeechApiSecondaryKey,
-                LuisAppId,
-                LuisSubscriptionKey,
-                CustomSpeechApiUrl);
+            ////////////////////////////////////////////////////////////////
+            // INSERT CUSTOM SPEECH TO TEXT API CALL CODE HERE!          
+            ////////////////////////////////////////////////////////////////
 
             micClient.AuthenticationUri = CustomSpeechAuthorizationUrl;
 
             RegisterMicrophoneEventHandlers();
         }
 
+       // ----------------------------------------------------------------------
 
 
 
-
-        //--------------------------------------------------------------------
+        /*--------------------------------------------------------------------
         // 3 - Text to Speech Confirmation
-
-        private Random _rand = new Random();
-
+        
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
             SoundPlayer player = new SoundPlayer(args.EventData);
@@ -283,8 +258,7 @@ namespace B2B_CognitiveServices_Cafe
         {
             Console.WriteLine("Unable to complete the TTS request: [{0}]", e.ToString());
         }
-
-
+        
         private string FormatOrderText(CoffeeOrderResult order)
         {
             string orderConfirmation = "";
@@ -294,22 +268,28 @@ namespace B2B_CognitiveServices_Cafe
                 var intros = new string[] { "No worries", "Sure", "Good choice" };
                 var outros = new string[] { "coming right up", "on the way", ". That won't be long" };
 
-                orderConfirmation = $"{intros[_rand.Next(0, intros.Length)]}. ";
+                orderConfirmation = $"{intros.Random()}. ";
                 foreach (var orderItem in order.Order)
                 {
                     orderConfirmation += $"{orderItem.Number} {orderItem.CoffeeType}, ";
                 }
-                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + $" {outros[_rand.Next(0, outros.Length)]}. ";
+                orderConfirmation = orderConfirmation.TrimEnd(new[] { ',', ' '}) + $" {outros.Random()}. ";
             }
             else
             {
-                orderConfirmation = "I'm sorry, I didn't quite catch that.";
+                var noOrderResponses = new string[] 
+                {
+                    "I'm sorry, I didn't quite catch that.",
+                    "Could you please repeat your order"
+                };
+
+                orderConfirmation = noOrderResponses.Random();
             }
 
             return orderConfirmation;
         }
 
-        private async Task ConfirmOrder(CoffeeOrderResult order)
+        private async Task ConfirmOrderVerbally(CoffeeOrderResult order)
         {
             string accessToken;
             
@@ -319,7 +299,7 @@ namespace B2B_CognitiveServices_Cafe
             {
                 accessToken = auth.GetAccessToken();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("Failed authentication.");
                 return;
@@ -331,18 +311,12 @@ namespace B2B_CognitiveServices_Cafe
             
             cortana.OnAudioAvailable += PlayAudio;
             cortana.OnError += ErrorHandler;
-
-            await cortana.Speak(CancellationToken.None, new Cortana.InputOptions()
-            {
-                RequestUri = new Uri("https://speech.platform.bing.com/synthesize"),
-                Text = orderConfirmationText,
-                VoiceType = Gender.Female,
-                Locale = "en-US",
-                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)", // en-US knows how to say cappuccino properly (AU does not)
-                OutputFormat = AudioOutputFormat.Riff16Khz16BitMonoPcm,
-                AuthorizationToken = "Bearer " + accessToken,
-            });
+            
+            ////////////////////////////////////////////////////////////////
+            // INSERT TEXT TO SPEECH CODE HERE!
+            ////////////////////////////////////////////////////////////////
         }
-
+        
+        ----------------------------------------------------------------------*/
     }
 }
